@@ -1,33 +1,53 @@
-name: Build APK
+name: Build Android APK (Debug)
 
 on:
-  workflow_dispatch: {}
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
-  build:
+  build-apk:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Build with Buildozer (root + local install)
-        uses: addnab/docker-run-action@v3
+      # Cache ל-Buildozer ול-Gradle כדי להאיץ בניות חוזרות
+      - name: Cache .buildozer
+        uses: actions/cache@v4
         with:
-          image: ghcr.io/kivy/buildozer:latest
-          options: >
-            -v ${{ github.workspace }}:/home/user/app
-            -w /home/user/app
-            --user root
-            -e HOME=/root
-            -e BUILDOZER_WARN_ON_ROOT=0
-          run: |
-            python3 -m pip install --upgrade pip
-            python3 -m pip install --no-cache-dir "buildozer==1.5.0" "cython<3.0"
-            yes | sdkmanager --licenses || true
-            python3 -m buildozer -v android release
+          path: ~/.buildozer
+          key: buildozer-${{ runner.os }}-${{ hashFiles('buildozer.spec') }}
+          restore-keys: |
+            buildozer-${{ runner.os }}-
 
-      - name: Upload APK
+      - name: Cache .gradle
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle
+          key: gradle-${{ runner.os }}-${{ hashFiles('buildozer.spec') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      - name: Build with Buildozer (Debug APK)
+        run: |
+          docker run --rm \
+            -v "${GITHUB_WORKSPACE}":/home/user/hostcwd \
+            -v "${HOME}/.buildozer":/home/user/.buildozer \
+            -v "${HOME}/.gradle":/home/user/.gradle \
+            -w /home/user/hostcwd \
+            kivy/buildozer:latest \
+            buildozer android debug
+
+      - name: List build outputs
+        run: |
+          ls -lah bin || true
+
+      - name: Upload APK artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: hello-apk
-          path: bin/*-release.apk
+          name: MEAT-debug-apk
+          path: |
+            bin/*-debug.apk
