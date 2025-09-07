@@ -10,14 +10,20 @@ version = 0.1
 orientation = portrait
 fullscreen = 0
 
+# ספריות Python
 requirements = python3,kivy
 
-android.api = 33
+# אנדרואיד – גרסאות יציבות
+android.api = 34
 android.minapi = 21
+# נכפה גרסת Build-Tools יציבה (מונע משיכה של 36.1-rc1)
+android.build_tools_version = 34.0.0
 android.arch = armeabi-v7a
 android.debug = 1
 
+# לא לעצור על אזהרת root
 [buildozer]
 log_level = 2
-# לא לשאול שאלה כשמריצים כ-root
 warn_on_root = 0
+# קבלה אוטומטית של רשיונות ה-SDK
+android.accept_sdk_license = True
