@@ -12,7 +12,7 @@ fullscreen = 0
 
 requirements = python3,kivy
 
-# ננעל גרסאות יציבות כדי להימנע מ-Preview
+# גרסאות יציבות
 android.api = 34
 android.minapi = 21
 android.build_tools_version = 34.0.0
@@ -20,6 +20,5 @@ android.arch = armeabi-v7a
 android.accept_sdk_license = True
 
 [buildozer]
-# לא לעצור על אזהרת root
 warn_on_root = 0
 log_level = 2
