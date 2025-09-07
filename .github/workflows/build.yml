@@ -1,0 +1,31 @@
+name: Build APK with Buildozer
+
+on:
+  workflow_dispatch: {}   # הפעלה ידנית מה-UI
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build with Buildozer (Docker)
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ghcr.io/kivy/buildozer:latest
+          options: >
+            -v ${{ github.workspace }}:/home/user/app
+            -w /home/user/app
+            --user root
+            -e HOME=/home/user
+          run: |
+            python3 -m pip install --upgrade pip
+            python3 -m pip install --no-cache-dir buildozer
+            buildozer -v android debug
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: apk
+          path: bin/*.apk
