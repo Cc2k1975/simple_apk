@@ -6,18 +6,26 @@ package.domain = org.example
 source.dir = .
 source.include_exts = py
 
-version = 0.1
+version = 1.0
 orientation = portrait
 fullscreen = 0
 
 requirements = python3,kivy
 
-# גרסאות יציבות
+# יעד אנדרואיד
 android.api = 34
 android.minapi = 21
 android.build_tools_version = 34.0.0
-android.arch = armeabi-v7a
+
+# תמיכה במעבדים מודרניים (הכי חשוב לבעיה שלך)
+# בונה גם ל-arm64-v8a וגם ל-armeabi-v7a
+android.archs = arm64-v8a, armeabi-v7a
+
+# קבלת רישוי ה-SDK אוטומטית
 android.accept_sdk_license = True
+
+# יוציא גרסת release (חתומה)
+android.release = 1
 
 [buildozer]
 warn_on_root = 0
