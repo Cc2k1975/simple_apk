@@ -1,33 +1,26 @@
-name: Build APK with Buildozer
+name: Build APK
 
 on:
   workflow_dispatch: {}
 
 jobs:
-  build-apk:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build with Buildozer (Docker)
+      - name: Build with Buildozer
         uses: addnab/docker-run-action@v3
         with:
           image: ghcr.io/kivy/buildozer:latest
-          options: >
-            -v ${{ github.workspace }}:/home/user/app
-            -w /home/user/app
-            --user root
-            -e HOME=/home/user
-            -e BUILDOZER_WARN_ON_ROOT=0
+          options: -v ${{ github.workspace }}:/home/user/app -w /home/user/app --user root
           run: |
-            # קבלה יזומה של רשיונות ה-SDK (למקרה ש-buildozer יבקש)
             yes | sdkmanager --licenses || true
-            # בנייה
             buildozer -v android debug
 
-      - name: Upload APK artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: apk
+          name: hello-apk
           path: bin/*.apk
