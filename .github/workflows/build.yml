@@ -1,7 +1,7 @@
 name: Build APK with Buildozer
 
 on:
-  workflow_dispatch: {}   # הפעלה ידנית מה-UI
+  workflow_dispatch: {}
 
 jobs:
   build-apk:
@@ -19,9 +19,8 @@ jobs:
             -w /home/user/app
             --user root
             -e HOME=/home/user
+            -e BUILDOZER_WARN_ON_ROOT=0
           run: |
-            python3 -m pip install --upgrade pip
-            python3 -m pip install --no-cache-dir buildozer
             buildozer -v android debug
 
       - name: Upload APK artifact
