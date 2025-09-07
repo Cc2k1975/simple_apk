@@ -21,6 +21,9 @@ jobs:
             -e HOME=/home/user
             -e BUILDOZER_WARN_ON_ROOT=0
           run: |
+            # קבלה יזומה של רשיונות ה-SDK (למקרה ש-buildozer יבקש)
+            yes | sdkmanager --licenses || true
+            # בנייה
             buildozer -v android debug
 
       - name: Upload APK artifact
