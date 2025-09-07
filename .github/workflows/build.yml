@@ -10,14 +10,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build with Buildozer
+      - name: Build with Buildozer (root + local install)
         uses: addnab/docker-run-action@v3
         with:
           image: ghcr.io/kivy/buildozer:latest
-          options: -v ${{ github.workspace }}:/home/user/app -w /home/user/app --user root
+          options: >
+            -v ${{ github.workspace }}:/home/user/app
+            -w /home/user/app
+            --user root
+            -e HOME=/root
+            -e BUILDOZER_WARN_ON_ROOT=0
           run: |
-            yes | sdkmanager --licenses || true
-            buildozer -v android debug
+            python3 -m pip install --upgrade pip
+            # מתקינים buildozer ל-root ועוקפים את ה-binary המובנה
+            python3 -m pip install --no-cache-dir "buildozer==1.5.0" "cython<3.0"
+            # מאשר רשיונות SDK דרך buildozer עצמו (בעקיפין דרך spec)
+            python3 -m buildozer -v android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
