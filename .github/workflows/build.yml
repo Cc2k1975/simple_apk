@@ -8,12 +8,15 @@ on:
 jobs:
   build-apk:
     runs-on: ubuntu-latest
+    env:
+      # מכבים BuildKit כדי למנוע את שגיאת ה-media type
+      DOCKER_BUILDKIT: "0"
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Cache ל-Buildozer ול-Gradle כדי להאיץ בניות חוזרות
+      # Cache להאצת בניות חוזרות
       - name: Cache .buildozer
         uses: actions/cache@v4
         with:
@@ -30,14 +33,20 @@ jobs:
           restore-keys: |
             gradle-${{ runner.os }}-
 
+      # מושכים במפורש את התמונה מה- GitHub Container Registry (GHCR)
+      - name: Pull Buildozer image (GHCR)
+        run: |
+          docker pull ghcr.io/kivy/buildozer:latest
+
       - name: Build with Buildozer (Debug APK)
         run: |
           docker run --rm \
+            -e DOCKER_BUILDKIT=0 \
             -v "${GITHUB_WORKSPACE}":/home/user/hostcwd \
             -v "${HOME}/.buildozer":/home/user/.buildozer \
             -v "${HOME}/.gradle":/home/user/.gradle \
             -w /home/user/hostcwd \
-            kivy/buildozer:latest \
+            ghcr.io/kivy/buildozer:latest \
             buildozer android debug
 
       - name: List build outputs
